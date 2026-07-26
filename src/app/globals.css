@@ -1,0 +1,981 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #002642;
+
+  /* Admin + shared Travelia brand tokens (aligned with traveler) */
+  --color-navy-950: #002642;
+  --color-navy-900: #012a3e;
+  --color-navy-800: #0a3558;
+  --color-navy-700: #164a66;
+
+  --color-teal-700: #0f6b6f;
+  --color-teal-600: #127e83;
+  --color-teal-500: #127e83;
+  --color-teal-400: #34bdaf;
+  --color-teal-100: #d1e8ea;
+  --color-teal-50: #f4fafb;
+
+  --color-surface: #ffffff;
+  --color-surface-muted: #f4fafb;
+  --color-border: #d1e8ea;
+  --color-ink: #012a3e;
+  --color-ink-muted: #67717a;
+  --color-ink-soft: #94a3b8;
+
+  --color-amber-500: #c48a1a;
+  --color-rose-500: #e4574a;
+  --color-sky-500: #51a5d6;
+
+  /* Landing page aliases (used by src/app/(public)/landing) */
+  --color-navy: #012a3e;
+  --color-teal: #127e83;
+  --color-turquoise: #34bdaf;
+  --color-deep-blue: #001829;
+  --color-gray-light: #f4f7f9;
+  --color-gray-medium: #d5dde3;
+  --color-gray-dark: #697386;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-playfair);
+
+  --color-navy-950: var(--color-navy-950);
+  --color-navy-900: var(--color-navy-900);
+  --color-navy-800: var(--color-navy-800);
+  --color-navy-700: var(--color-navy-700);
+  --color-teal-700: var(--color-teal-700);
+  --color-teal-600: var(--color-teal-600);
+  --color-teal-500: var(--color-teal-500);
+  --color-teal-400: var(--color-teal-400);
+  --color-teal-100: var(--color-teal-100);
+  --color-teal-50: var(--color-teal-50);
+  --color-surface: var(--color-surface);
+  --color-surface-muted: var(--color-surface-muted);
+  --color-border: var(--color-border);
+  --color-ink: var(--color-ink);
+  --color-ink-muted: var(--color-ink-muted);
+  --color-ink-soft: var(--color-ink-soft);
+  --color-amber-500: var(--color-amber-500);
+  --color-rose-500: var(--color-rose-500);
+  --color-sky-500: var(--color-sky-500);
+
+  --color-navy: var(--color-navy);
+  --color-teal: var(--color-teal);
+  --color-turquoise: var(--color-turquoise);
+  --color-deep-blue: var(--color-deep-blue);
+  --color-gray-light: var(--color-gray-light);
+  --color-gray-medium: var(--color-gray-medium);
+  --color-gray-dark: var(--color-gray-dark);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+/* Traveler dark theme */
+html[data-theme="dark"] {
+  --background: #07141c;
+  --foreground: #e8f0f2;
+  --color-surface: #0f2430;
+  --color-surface-muted: #122a38;
+  --color-border: #1e3a4a;
+  --color-ink: #e8f0f2;
+  --color-ink-muted: #b5c6d0;
+  --color-ink-soft: #8aa0ae;
+  /* Keep navy-* tokens dark for admin sidebars / fills; text fixed via selectors below */
+  --color-teal-50: #122a38;
+  --color-teal-100: #1e3a4a;
+  --color-sky-500: #7ec4e8;
+  --color-gray-dark: #b5c6d0;
+  --color-gray-light: #122a38;
+  --color-gray-medium: #1e3a4a;
+  color-scheme: dark;
+}
+
+html[data-theme="dark"] body {
+  background: #07141c;
+  color: #e8f0f2;
+}
+
+html[data-theme="dark"] .traveler-glass {
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(18, 126, 131, 0.22), transparent 50%),
+    radial-gradient(ellipse at 90% 10%, rgba(81, 165, 214, 0.14), transparent 45%),
+    #07141c;
+  color: #e8f0f2;
+}
+
+html[data-theme="dark"] .traveler-glass__sheet {
+  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(15, 36, 48, 0.72);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 18px 50px rgba(0, 0, 0, 0.35);
+}
+
+html[data-theme="dark"] footer.traveler-chrome {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  background: rgba(10, 24, 34, 0.85) !important;
+  color: #b5c6d0;
+}
+
+/* Surfaces — white / mint cards inside traveler shell */
+html[data-theme="dark"] .traveler-glass .bg-white,
+html[data-theme="dark"] .traveler-glass .bg-white\/70,
+html[data-theme="dark"] .traveler-glass .bg-white\/50,
+html[data-theme="dark"] .traveler-glass .bg-white\/80,
+html[data-theme="dark"] .traveler-chrome .bg-white,
+html[data-theme="dark"] .trip-detail,
+html[data-theme="dark"] .trip-detail .bg-white {
+  background-color: #0f2430 !important;
+}
+
+html[data-theme="dark"] .traveler-glass .bg-\[\#F4FAFB\],
+html[data-theme="dark"] .traveler-glass .bg-\[\#F8FBFC\],
+html[data-theme="dark"] .traveler-glass .bg-\[\#f8fafb\],
+html[data-theme="dark"] .traveler-glass .bg-\[\#EEF3F8\],
+html[data-theme="dark"] .traveler-glass .bg-\[\#EAF7F7\],
+html[data-theme="dark"] .traveler-glass .bg-\[\#E8F4F5\],
+html[data-theme="dark"] .traveler-chrome .bg-\[\#F4FAFB\],
+html[data-theme="dark"] .traveler-glass .hover\:bg-\[\#F4FAFB\]:hover,
+html[data-theme="dark"] .traveler-chrome .hover\:bg-\[\#F4FAFB\]:hover,
+html[data-theme="dark"] .traveler-glass .hover\:bg-white:hover {
+  background-color: #122a38 !important;
+}
+
+/* Soft tint chips that would otherwise keep light fills under dark text */
+html[data-theme="dark"] .traveler-glass .bg-\[\#FFF1EC\],
+html[data-theme="dark"] .traveler-glass .bg-\[\#FFF5F4\],
+html[data-theme="dark"] .traveler-glass .bg-\[\#FFF8E8\],
+html[data-theme="dark"] .traveler-glass .bg-\[\#F3EEF8\],
+html[data-theme="dark"] .traveler-glass .bg-\[\#EAF2FF\],
+html[data-theme="dark"] .traveler-glass .bg-\[\#EEF6F7\],
+html[data-theme="dark"] .traveler-glass .bg-\[\#eef3f4\],
+html[data-theme="dark"] .traveler-glass .bg-\[\#e8eef0\] {
+  background-color: #122a38 !important;
+}
+
+/* Navy / deep-blue body text → light (covers opacity variants like /65) */
+html[data-theme="dark"] .traveler-glass [class*="text-[#012A3E]"],
+html[data-theme="dark"] .traveler-glass [class*="text-[#002642]"],
+html[data-theme="dark"] .traveler-chrome [class*="text-[#012A3E]"],
+html[data-theme="dark"] .traveler-chrome [class*="text-[#002642]"],
+html[data-theme="dark"] .traveler-dashboard[class*="text-[#002642]"],
+html[data-theme="dark"] .traveler-dashboard[class*="text-[#012A3E]"],
+html[data-theme="dark"] .trip-detail [class*="text-[#012A3E]"],
+html[data-theme="dark"] .trip-detail [class*="text-[#002642]"],
+html[data-theme="dark"] .traveler-glass .text-ink,
+html[data-theme="dark"] .traveler-glass .text-navy,
+html[data-theme="dark"] .traveler-glass .text-navy-900,
+html[data-theme="dark"] .traveler-glass .text-navy-950,
+html[data-theme="dark"] .traveler-chrome .text-ink {
+  color: #e8f0f2 !important;
+}
+
+html[data-theme="dark"] .traveler-glass [class*="hover:text-[#012A3E]"]:hover,
+html[data-theme="dark"] .traveler-glass [class*="hover:text-[#002642]"]:hover,
+html[data-theme="dark"] .traveler-chrome [class*="hover:text-[#012A3E]"]:hover,
+html[data-theme="dark"] .traveler-chrome [class*="hover:text-[#002642]"]:hover {
+  color: #ffffff !important;
+}
+
+/* Keep dark ink on light accent fills (mint / turquoise CTAs) */
+html[data-theme="dark"] .traveler-glass [class*="bg-[#9aebed]"][class*="text-[#012A3E]"],
+html[data-theme="dark"] .traveler-glass [class*="bg-[#9aebed]"][class*="text-[#002642]"],
+html[data-theme="dark"] .traveler-glass [class*="bg-[#34BDAF]"][class*="text-[#012A3E]"],
+html[data-theme="dark"] .traveler-glass [class*="bg-[#34BDAF]"][class*="text-[#002642]"],
+html[data-theme="dark"] .trip-detail [class*="bg-[#9aebed]"][class*="text-[#012A3E]"] {
+  color: #012a3e !important;
+}
+
+/* Teal / sky / steel blues used as text — brighten for contrast on dark */
+html[data-theme="dark"] .traveler-glass [class*="text-[#127E83]"],
+html[data-theme="dark"] .traveler-glass [class*="text-[#0f6d71]"],
+html[data-theme="dark"] .traveler-glass [class*="text-[#0f6b6f]"],
+html[data-theme="dark"] .traveler-chrome [class*="text-[#127E83]"],
+html[data-theme="dark"] .traveler-chrome [class*="hover:text-[#127E83]"]:hover,
+html[data-theme="dark"] .traveler-glass [class*="hover:text-[#127E83]"]:hover,
+html[data-theme="dark"] .traveler-glass .text-teal,
+html[data-theme="dark"] .traveler-glass .text-teal-500,
+html[data-theme="dark"] .traveler-glass .text-teal-600,
+html[data-theme="dark"] .traveler-glass .text-teal-700,
+html[data-theme="dark"] .traveler-chrome .text-teal-600 {
+  color: #5ec4c8 !important;
+}
+
+html[data-theme="dark"] .traveler-glass [class*="text-[#51A5D6]"],
+html[data-theme="dark"] .traveler-chrome [class*="text-[#51A5D6]"],
+html[data-theme="dark"] .traveler-chrome [class*="hover:text-[#1d6f9a]"]:hover {
+  color: #7ec4e8 !important;
+}
+
+html[data-theme="dark"] .traveler-glass [class*="text-[#3B6B8C]"],
+html[data-theme="dark"] .traveler-glass [class*="text-[#2f5670]"],
+html[data-theme="dark"] .traveler-glass [class*="text-[#3B6FBF]"],
+html[data-theme="dark"] .traveler-glass [class*="text-[#2f5899]"] {
+  color: #9ab8d0 !important;
+}
+
+/* Muted grays → lighter on dark surfaces */
+html[data-theme="dark"] .traveler-glass [class*="text-[#67717A]"],
+html[data-theme="dark"] .traveler-glass [class*="text-[#94A3B8]"],
+html[data-theme="dark"] .traveler-chrome [class*="text-[#94A3B8]"],
+html[data-theme="dark"] .traveler-chrome [class*="text-[#67717A]"],
+html[data-theme="dark"] .trip-detail [class*="text-[#67717A]"],
+html[data-theme="dark"] .trip-detail [class*="text-[#94A3B8]"] {
+  color: #b5c6d0 !important;
+}
+
+/* Borders / rings that read as light mint lines on dark */
+html[data-theme="dark"] .traveler-glass [class*="ring-[#d1e8ea]"],
+html[data-theme="dark"] .traveler-glass [class*="ring-[#e8eef0]"],
+html[data-theme="dark"] .traveler-glass [class*="ring-[#002642]"],
+html[data-theme="dark"] .traveler-chrome [class*="ring-[#d1e8ea]"],
+html[data-theme="dark"] .traveler-chrome [class*="border-[#d1e8ea]"],
+html[data-theme="dark"] .traveler-glass [class*="border-[#d1e8ea]"],
+html[data-theme="dark"] .traveler-glass [class*="border-[#e8eef0]"],
+html[data-theme="dark"] .traveler-glass [class*="border-[#e5e7eb]"] {
+  --tw-ring-color: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+html[data-theme="dark"] .traveler-glass [class*="border-[#012A3E]"],
+html[data-theme="dark"] .trip-detail [class*="border-[#012A3E]"],
+html[data-theme="dark"] .trip-detail [class*="border-[#127E83]"] {
+  border-color: rgba(255, 255, 255, 0.14) !important;
+}
+
+/* Trip atlas paper / topo panels */
+html[data-theme="dark"] .trip-atlas-paper,
+html[data-theme="dark"] .trip-atlas-topo,
+html[data-theme="dark"] .trip-atlas-panel {
+  background-color: #0f2430 !important;
+  color: #e8f0f2;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Inputs / selects sitting on dark cards */
+html[data-theme="dark"] .traveler-glass input:not([type="checkbox"]):not([type="radio"]),
+html[data-theme="dark"] .traveler-glass select,
+html[data-theme="dark"] .traveler-glass textarea {
+  color: #e8f0f2;
+}
+
+html[data-theme="dark"] .traveler-glass input::placeholder,
+html[data-theme="dark"] .traveler-glass textarea::placeholder {
+  color: #8aa0ae;
+}
+
+/* Journey stages — high contrast on dark dashboard */
+html[data-theme="dark"] .dash-stages {
+  background-color: #122a38 !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+html[data-theme="dark"] .dash-stages h2,
+html[data-theme="dark"] .dash-stages .dash-stages__label[class*="text-[#012A3E]"],
+html[data-theme="dark"] .dash-stages .dash-stages__label[class*="text-[#002642]"] {
+  color: #f2f7f9 !important;
+}
+
+html[data-theme="dark"] .dash-stages .dash-stages__label[class*="text-[#67717A]"],
+html[data-theme="dark"] .dash-stages .dash-stages__label[class*="text-[#94A3B8]"] {
+  color: #a8bbc6 !important;
+}
+
+html[data-theme="dark"] .dash-stages__track {
+  background-color: rgba(148, 196, 200, 0.35) !important;
+}
+
+html[data-theme="dark"] .dash-stages__dot[class*="bg-[#012A3E]"] {
+  background-color: #1a4558 !important;
+  color: #ffffff !important;
+  box-shadow: inset 0 0 0 1px rgba(158, 235, 237, 0.35);
+}
+
+html[data-theme="dark"] .dash-stages__dot[class*="bg-white"] {
+  background-color: #0a1c26 !important;
+  color: #c5d4dc !important;
+  box-shadow: 0 0 0 2px rgba(158, 235, 237, 0.45);
+}
+
+html[data-theme="dark"] .dash-stages__dot[class*="bg-[#127E83]"] {
+  background-color: #34bdaf !important;
+  color: #012a3e !important;
+}
+
+/* Recent memories journal cards */
+html[data-theme="dark"] .dash-journal-card {
+  background-color: #152833 !important;
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.35),
+    inset 0 0 0 1px rgba(234, 223, 206, 0.18) !important;
+  --tw-ring-color: rgba(234, 223, 206, 0.22);
+}
+
+html[data-theme="dark"] .dash-journal-card__meta {
+  color: #d4b896 !important;
+}
+
+html[data-theme="dark"] .dash-journal-card__body {
+  color: #f2f7f9 !important;
+}
+
+html[data-theme="dark"] .dash-journal-card__chip {
+  background-color: #243846 !important;
+  color: #e8d5bc !important;
+}
+
+html[data-theme="dark"] .dash-journal-card__chip--place {
+  background-color: rgba(52, 189, 175, 0.16) !important;
+  color: #7ad0d3 !important;
+}
+
+html[data-theme="dark"] .dash-journal-card__link {
+  color: #7ad0d3 !important;
+}
+
+html[data-theme="dark"] .dash-journal-card__ph {
+  background-color: #1a303c !important;
+  color: #c4a882 !important;
+}
+
+/* Force navbar to stay light even when page is dark */
+html[data-theme="dark"] .traveler-glass .traveler-navbar,
+html[data-theme="dark"] .traveler-navbar-wrap {
+  color: #012a3e;
+}
+
+html[data-theme="dark"] .traveler-glass .traveler-navbar__bar {
+  background-color: #f4fafb !important;
+  border-color: #d1e8ea !important;
+  box-shadow: 0 8px 24px rgba(1, 42, 62, 0.06) !important;
+  color: #012a3e !important;
+}
+
+html[data-theme="dark"] .traveler-glass .traveler-navbar [class*="bg-[#F4FAFB]"] {
+  background-color: #f4fafb !important;
+}
+
+html[data-theme="dark"] .traveler-glass .traveler-navbar [class*="bg-white"],
+html[data-theme="dark"] .traveler-glass .traveler-navbar .hover\:bg-white:hover,
+html[data-theme="dark"] .traveler-glass .traveler-navbar .hover\:bg-\[\#F4FAFB\]:hover {
+  background-color: #ffffff !important;
+}
+
+html[data-theme="dark"] .traveler-glass .traveler-navbar [class*="text-[#012A3E]"],
+html[data-theme="dark"] .traveler-glass .traveler-navbar [class*="text-[#002642]"],
+html[data-theme="dark"] .traveler-glass .traveler-navbar .text-ink {
+  color: #012a3e !important;
+}
+
+html[data-theme="dark"] .traveler-glass .traveler-navbar [class*="hover:text-[#012A3E]"]:hover,
+html[data-theme="dark"] .traveler-glass .traveler-navbar [class*="hover:text-[#002642]"]:hover {
+  color: #012a3e !important;
+}
+
+html[data-theme="dark"] .traveler-glass .traveler-navbar [class*="text-[#127E83]"],
+html[data-theme="dark"] .traveler-glass .traveler-navbar [class*="hover:text-[#127E83]"]:hover,
+html[data-theme="dark"] .traveler-glass .traveler-navbar .text-teal-600 {
+  color: #127e83 !important;
+}
+
+html[data-theme="dark"] .traveler-glass .traveler-navbar [class*="text-[#51A5D6]"],
+html[data-theme="dark"] .traveler-glass .traveler-navbar [class*="hover:text-[#1d6f9a]"]:hover {
+  color: #51a5d6 !important;
+}
+
+html[data-theme="dark"] .traveler-glass .traveler-navbar [class*="text-[#94A3B8]"],
+html[data-theme="dark"] .traveler-glass .traveler-navbar [class*="text-[#67717A]"] {
+  color: #67717a !important;
+}
+
+html[data-theme="dark"] .traveler-glass .traveler-navbar [class*="border-[#d1e8ea]"],
+html[data-theme="dark"] .traveler-glass .traveler-navbar [class*="ring-[#d1e8ea]"],
+html[data-theme="dark"] .traveler-glass .traveler-navbar [class*="border-[#e8eef0]"],
+html[data-theme="dark"] .traveler-glass .traveler-navbar [class*="ring-[#e8eef0]"] {
+  border-color: #d1e8ea !important;
+  --tw-ring-color: #d1e8ea;
+}
+
+html[data-compact="true"] .traveler-dashboard .rounded-\[2rem\] {
+  border-radius: 1.25rem;
+}
+
+html[data-compact="true"] .traveler-dashboard .p-6,
+html[data-compact="true"] .traveler-dashboard .sm\:p-8 {
+  padding: 1rem;
+}
+
+html[data-reduce-motion="true"] *,
+html[data-reduce-motion="true"] *::before,
+html[data-reduce-motion="true"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+
+.admin-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.admin-scroll::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 999px;
+}
+
+/* Admin shell — same glass wash language as traveler */
+.admin-shell {
+  background:
+    radial-gradient(90% 60% at 8% 0%, rgba(81, 165, 214, 0.14), transparent 55%),
+    radial-gradient(70% 50% at 100% 15%, rgba(18, 126, 131, 0.1), transparent 50%),
+    linear-gradient(165deg, #ffffff 0%, #f4fafb 48%, #eef6f7 100%);
+}
+
+.admin-shell__glow {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.admin-shell__glow::before,
+.admin-shell__glow::after {
+  content: "";
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(90px);
+  opacity: 0.4;
+}
+
+.admin-shell__glow::before {
+  top: -8%;
+  left: 18%;
+  width: min(32rem, 50vw);
+  height: min(32rem, 50vw);
+  background: rgba(18, 126, 131, 0.18);
+}
+
+.admin-shell__glow::after {
+  right: -6%;
+  bottom: 10%;
+  width: min(28rem, 45vw);
+  height: min(28rem, 45vw);
+  background: rgba(81, 165, 214, 0.14);
+}
+
+.admin-panel {
+  border: 1px solid rgba(209, 232, 234, 0.9);
+  border-radius: 1.25rem;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.85) inset,
+    0 12px 36px rgba(1, 42, 62, 0.05);
+  backdrop-filter: blur(12px) saturate(1.1);
+  -webkit-backdrop-filter: blur(12px) saturate(1.1);
+}
+
+@keyframes journeyIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes tripPop {
+  0% {
+    opacity: 0;
+    transform: translateY(12px) scale(0.94);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes tripStamp {
+  0% {
+    transform: scale(0.6) rotate(-18deg);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.12) rotate(4deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes tripPulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.04);
+  }
+}
+
+.trip-quest-item {
+  animation: tripPop 0.35s ease-out both;
+}
+
+.trip-quest-item:nth-child(1) {
+  animation-delay: 0.02s;
+}
+.trip-quest-item:nth-child(2) {
+  animation-delay: 0.06s;
+}
+.trip-quest-item:nth-child(3) {
+  animation-delay: 0.1s;
+}
+.trip-quest-item:nth-child(4) {
+  animation-delay: 0.14s;
+}
+.trip-quest-item:nth-child(5) {
+  animation-delay: 0.18s;
+}
+
+.trip-stamp-done {
+  animation: tripStamp 0.45s cubic-bezier(0.34, 1.4, 0.64, 1) both;
+}
+
+@keyframes atlasSlide {
+  from {
+    opacity: 0;
+    transform: translateX(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes atlasInk {
+  from {
+    opacity: 0;
+    letter-spacing: 0.35em;
+  }
+  to {
+    opacity: 1;
+    letter-spacing: 0.18em;
+  }
+}
+
+.trip-atlas-panel {
+  animation: atlasSlide 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.trip-atlas-ink {
+  animation: atlasInk 0.6s ease-out both;
+}
+
+.trip-atlas-paper {
+  background-color: #ffffff;
+  background-image:
+    linear-gradient(rgba(1, 42, 62, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(1, 42, 62, 0.025) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.trip-atlas-topo {
+  background-color: #ffffff;
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    rgba(1, 42, 62, 0.08) 1px,
+    transparent 0
+  );
+  background-size: 14px 14px;
+}
+
+.trip-atlas-ledger {
+  background:
+    repeating-linear-gradient(
+      transparent,
+      transparent 27px,
+      rgba(228, 87, 74, 0.12) 27px,
+      rgba(228, 87, 74, 0.12) 28px
+    ),
+    #fffdf8;
+}
+
+.trip-ticket-notch {
+  mask-image: radial-gradient(circle at 0 50%, transparent 10px, black 10.5px);
+}
+
+/* ——— Trip memory book (print / PDF export) ——— */
+@media print {
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  html,
+  body {
+    background: white !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .no-print,
+  .trip-book-toolbar,
+  header.traveler-shell,
+  nav,
+  aside,
+  .traveler-nav,
+  [data-traveler-chrome] {
+    display: none !important;
+  }
+
+  .trip-book-page {
+    break-after: page;
+    page-break-after: always;
+    min-height: 100vh;
+  }
+
+  .trip-book-page:last-child {
+    break-after: auto;
+    page-break-after: auto;
+  }
+
+  .break-before-page {
+    break-before: page;
+    page-break-before: always;
+  }
+}
+
+@media screen {
+  .trip-book-page {
+    margin: 0.75rem auto;
+    box-shadow: 0 12px 40px rgba(1, 42, 62, 0.12);
+  }
+
+  .trip-book-cover,
+  .trip-book-page {
+    max-width: 210mm;
+    min-height: auto !important;
+  }
+}
+
+@media screen and (min-width: 640px) {
+  .trip-book-page {
+    margin: 1.25rem auto;
+  }
+
+  .trip-book-cover,
+  .trip-book-page {
+    min-height: 297mm !important;
+  }
+}
+
+
+
+/* Trip book export — hide traveler chrome without a client pathname gate */
+body:has(.trip-book) .traveler-chrome,
+body:has(.trip-book) .traveler-navbar-wrap {
+  display: none !important;
+}
+
+body:has(.trip-book) .traveler-main {
+  padding: 0 !important;
+}
+
+body:has(.trip-book) .traveler-glass__sheet {
+  max-width: none;
+  padding: 0 !important;
+  border: none;
+  border-radius: 0;
+  background: #fff;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+body:has(.trip-book) .traveler-glass,
+body:has(.trip-book) .traveler-glass__glow {
+  background: #fff;
+}
+
+body:has(.trip-book) .traveler-glass__glow::before,
+body:has(.trip-book) .traveler-glass__glow::after {
+  display: none;
+}
+
+/* Traveler dashboard — editorial motion */
+@keyframes dash-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dash-ken {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.06);
+  }
+}
+
+.dash-home .dash-rise {
+  animation: dash-rise 0.75s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.dash-home .dash-delay-1 {
+  animation-delay: 0.08s;
+}
+.dash-home .dash-delay-2 {
+  animation-delay: 0.16s;
+}
+.dash-home .dash-delay-3 {
+  animation-delay: 0.24s;
+}
+.dash-home .dash-delay-4 {
+  animation-delay: 0.32s;
+}
+.dash-home .dash-delay-5 {
+  animation-delay: 0.4s;
+}
+
+.dash-home .dash-ken {
+  animation: dash-ken 18s ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dash-home .dash-rise,
+  .dash-home .dash-ken {
+    animation: none;
+  }
+}
+
+@keyframes travelia-flight-dash {
+  to {
+    stroke-dashoffset: -56;
+  }
+}
+
+.travelia-flight-dash {
+  animation: travelia-flight-dash 1.2s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .travelia-flight-dash {
+    animation: none;
+  }
+}
+
+/* ——— Travelia micro-interactions ——— */
+@keyframes travelia-kenburns {
+  from {
+    transform: scale(1) translate(0, 0);
+  }
+  to {
+    transform: scale(1.1) translate(-1.5%, -1%);
+  }
+}
+
+@keyframes travelia-pin-bounce {
+  0% {
+    transform: translateY(-12px) scale(0.6);
+    opacity: 0;
+  }
+  55% {
+    transform: translateY(2px) scale(1.08);
+    opacity: 1;
+  }
+  75% {
+    transform: translateY(-3px) scale(0.96);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes travelia-check-pop {
+  0% {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.travelia-kenburns {
+  animation: travelia-kenburns 22s ease-out forwards;
+  transform-origin: center center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .travelia-kenburns {
+    animation: none;
+  }
+}
+
+.visited-map-marker span.visited-map-pin-bounce {
+  animation: travelia-pin-bounce 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .visited-map-marker span.visited-map-pin-bounce {
+    animation: none;
+  }
+}
+
+.travelia-check-pop {
+  animation: travelia-check-pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.travelia-dest-card {
+  transition:
+    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.travelia-dest-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 24px 50px rgba(1, 42, 62, 0.32);
+}
+
+.travelia-dest-card img,
+.travelia-dest-card .travelia-dest-image {
+  transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.travelia-dest-card:hover img,
+.travelia-dest-card:hover .travelia-dest-image {
+  transform: scale(1.08);
+}
+
+.travelia-search {
+  max-width: 24rem;
+  transition:
+    max-width 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.35s ease,
+    border-color 0.35s ease;
+}
+
+.travelia-search:focus-within {
+  max-width: min(100%, 36rem);
+}
+
+.travelia-budget-fill {
+  transition: width 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Leaflet markers — hide default icon chrome */
+.visited-map-marker {
+  background: transparent !important;
+  border: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .travelia-dest-card,
+  .travelia-dest-card:hover,
+  .travelia-dest-card img,
+  .travelia-dest-card .travelia-dest-image,
+  .travelia-dest-card:hover img,
+  .travelia-dest-card:hover .travelia-dest-image,
+  .travelia-search,
+  .travelia-budget-fill,
+  .travelia-check-pop {
+    transition: none;
+    animation: none;
+    transform: none;
+  }
+}
+
+/* Traveler — glass sheet backdrop (static, no hydration risk) */
+.traveler-glass {
+  background:
+    radial-gradient(90% 60% at 8% 0%, rgba(81, 165, 214, 0.14), transparent 55%),
+    radial-gradient(70% 50% at 100% 15%, rgba(18, 126, 131, 0.1), transparent 50%),
+    linear-gradient(165deg, #ffffff 0%, #f4fafb 48%, #eef6f7 100%);
+}
+
+.traveler-glass__glow {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.traveler-glass__glow::before,
+.traveler-glass__glow::after {
+  content: "";
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(90px);
+  opacity: 0.45;
+}
+
+.traveler-glass__glow::before {
+  top: -12%;
+  left: -8%;
+  width: min(36rem, 70vw);
+  height: min(36rem, 70vw);
+  background: rgba(52, 189, 175, 0.18);
+}
+
+.traveler-glass__glow::after {
+  right: -10%;
+  bottom: 10%;
+  width: min(28rem, 55vw);
+  height: min(28rem, 55vw);
+  background: rgba(81, 165, 214, 0.16);
+}
+
+.traveler-glass__sheet {
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 1.5rem;
+  background: rgba(255, 255, 255, 0.55);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.8) inset,
+    0 18px 50px rgba(1, 42, 62, 0.05);
+  backdrop-filter: blur(16px) saturate(1.15);
+  -webkit-backdrop-filter: blur(16px) saturate(1.15);
+}
+
+@media (max-width: 639px) {
+  .traveler-glass__sheet {
+    border-radius: 1.15rem;
+    background: rgba(255, 255, 255, 0.62);
+    backdrop-filter: blur(12px) saturate(1.1);
+    -webkit-backdrop-filter: blur(12px) saturate(1.1);
+  }
+}
+
+
+
+

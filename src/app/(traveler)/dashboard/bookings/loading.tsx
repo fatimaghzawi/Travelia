@@ -1,0 +1,9 @@
+import { TravelPlaneLoader } from "@/components/traveler/motion/TravelMotion";
+
+export default function Loading() {
+  return (
+    <div className="trips-list">
+      <TravelPlaneLoader label="Loading your bookings…" />
+    </div>
+  );
+}
