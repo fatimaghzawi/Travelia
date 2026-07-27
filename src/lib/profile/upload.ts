@@ -1,11 +1,10 @@
-import { mkdir, writeFile } from "fs/promises";
-import path from "path";
 import { randomBytes } from "crypto";
 import { AppError } from "@/lib/api/errors";
+import { storeUpload } from "@/lib/storage/blob";
 
 const MAX_BYTES = {
   avatar: 2 * 1024 * 1024,
-  passport: 5 * 1024 * 1024,
+  passport: Math.floor(4.5 * 1024 * 1024),
 } as const;
 
 const ALLOWED = {
@@ -46,20 +45,19 @@ export async function saveProfileUpload(
     throw new AppError(
       kind === "avatar"
         ? "Avatar must be 2MB or smaller"
-        : "Passport file must be 5MB or smaller",
+        : "Passport file must be 4.5MB or smaller",
       400,
       "FILE_TOO_LARGE"
     );
   }
 
   const folder = kind === "avatar" ? "avatars" : "passports";
-  const dir = path.join(process.cwd(), "public", "uploads", folder);
-  await mkdir(dir, { recursive: true });
-
   const ext = EXT[file.type] || "bin";
   const name = `${Date.now()}-${randomBytes(8).toString("hex")}.${ext}`;
-  const buffer = Buffer.from(await file.arrayBuffer());
-  await writeFile(path.join(dir, name), buffer);
 
-  return `/uploads/${folder}/${name}`;
+  return storeUpload({
+    pathname: `${folder}/${name}`,
+    data: file,
+    contentType: file.type,
+  });
 }

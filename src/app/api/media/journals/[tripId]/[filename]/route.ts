@@ -8,6 +8,7 @@ import {
   checkTripJournalMediaAccess,
   journalStorageDir,
 } from "@/lib/media/journals";
+import { getPrivateBlob } from "@/lib/storage/blob";
 
 type Ctx = { params: Promise<{ tripId: string; filename: string }> };
 
@@ -20,8 +21,8 @@ const MIME: Record<string, string> = {
 };
 
 /**
- * Auth-gated journal photo serving (private storage under /storage).
- * Also falls back to legacy public/uploads paths for older rows.
+ * Auth-gated journal photo serving.
+ * Prefers private Vercel Blob, then local /storage, then legacy /public paths.
  */
 export async function GET(_request: NextRequest, context: Ctx) {
   const session = await auth();
@@ -55,6 +56,22 @@ export async function GET(_request: NextRequest, context: Ctx) {
     return accessCheck.reason === "NOT_FOUND"
       ? new Response("Not found", { status: 404 })
       : new Response("Forbidden", { status: 403 });
+  }
+
+  const blobPath = `journals/${tripId}/${filename}`;
+  const blob = await getPrivateBlob(blobPath);
+  if (blob?.statusCode === 200 && blob.stream) {
+    return new Response(blob.stream, {
+      status: 200,
+      headers: {
+        "Content-Type":
+          blob.blob.contentType ||
+          MIME[filename.split(".").pop()?.toLowerCase() || ""] ||
+          "application/octet-stream",
+        "Cache-Control": "private, max-age=3600",
+        "X-Content-Type-Options": "nosniff",
+      },
+    });
   }
 
   const privatePath = path.join(journalStorageDir(tripId), filename);

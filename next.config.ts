@@ -5,7 +5,7 @@ const isProd = process.env.NODE_ENV === "production";
 
 const imageHosts = (
   process.env.NEXT_IMAGE_HOSTS ||
-  "images.unsplash.com,lh3.googleusercontent.com,avatars.githubusercontent.com,res.cloudinary.com"
+  "images.unsplash.com,lh3.googleusercontent.com,avatars.githubusercontent.com,res.cloudinary.com,*.public.blob.vercel-storage.com"
 )
   .split(",")
   .map((h) => h.trim())
