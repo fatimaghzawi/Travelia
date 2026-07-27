@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft, Globe2, Lock, Mail, Phone, User } from "lucide-react";
+import { ArrowLeft, ChevronDown, Globe2, Lock, Mail, User } from "lucide-react";
 import {
   registerStep1Schema,
   registerStep2Schema,
@@ -16,6 +16,7 @@ import {
 import {
   COUNTRY_DIAL_OPTIONS,
   COUNTRY_OPTIONS,
+  dialCodeForCountry,
 } from "@/lib/constants/countries";
 import {
   PRIVACY_POLICY,
@@ -29,6 +30,10 @@ import {
   Select,
   Textarea,
 } from "@/components/ui";
+import {
+  fieldErrorClass,
+  fieldLabelClass,
+} from "@/components/ui/field";
 import { SplitAuthLayout } from "@/components/auth/AuthShell";
 import { AuthFormHeader } from "@/components/auth/AuthFormHeader";
 import { AuthBackLink } from "@/components/auth/AuthBackLink";
@@ -45,21 +50,53 @@ type WizardData = RegisterStep1Input &
   RegisterStep2Input &
   RegisterStep3Input;
 
-const DEFAULT_DIAL_CODE = "+1";
+const DEFAULT_DIAL = COUNTRY_DIAL_OPTIONS[0];
 
-function splitPhoneParts(value?: string | null) {
-  const raw = (value || "").trim();
-  const matchedDial = COUNTRY_DIAL_OPTIONS.find(
-    (option) => raw === option.code || raw.startsWith(`${option.code} `)
-  );
-
-  if (!raw) {
-    return { dialCode: DEFAULT_DIAL_CODE, localNumber: "" };
+function findDialOption(dialCode: string, preferredCountry?: string | null) {
+  if (preferredCountry) {
+    const byCountry = COUNTRY_DIAL_OPTIONS.find(
+      (option) => option.country === preferredCountry
+    );
+    if (byCountry) return byCountry;
   }
 
-  if (matchedDial) {
+  const matches = COUNTRY_DIAL_OPTIONS.filter(
+    (option) => option.code === dialCode
+  );
+  return matches[0] ?? DEFAULT_DIAL;
+}
+
+function splitPhoneParts(value?: string | null, preferredCountry?: string | null) {
+  const raw = (value || "").trim();
+
+  if (!raw) {
     return {
-      dialCode: matchedDial.code,
+      dial: preferredCountry
+        ? findDialOption(dialCodeForCountry(preferredCountry), preferredCountry)
+        : DEFAULT_DIAL,
+      localNumber: "",
+    };
+  }
+
+  const matchedDial = [...COUNTRY_DIAL_OPTIONS]
+    .sort((a, b) => b.code.length - a.code.length)
+    .find(
+      (option) => raw === option.code || raw.startsWith(`${option.code} `)
+    );
+
+  if (matchedDial) {
+    const dial =
+      preferredCountry &&
+      COUNTRY_DIAL_OPTIONS.some(
+        (option) =>
+          option.country === preferredCountry &&
+          option.code === matchedDial.code
+      )
+        ? findDialOption(matchedDial.code, preferredCountry)
+        : matchedDial;
+
+    return {
+      dial,
       localNumber: raw.slice(matchedDial.code.length).trim(),
     };
   }
@@ -67,12 +104,17 @@ function splitPhoneParts(value?: string | null) {
   if (raw.startsWith("+")) {
     const [dialCode, ...rest] = raw.split(/\s+/);
     return {
-      dialCode: dialCode || DEFAULT_DIAL_CODE,
+      dial: findDialOption(dialCode || DEFAULT_DIAL.code, preferredCountry),
       localNumber: rest.join(" ").trim(),
     };
   }
 
-  return { dialCode: DEFAULT_DIAL_CODE, localNumber: raw };
+  return {
+    dial: preferredCountry
+      ? findDialOption(dialCodeForCountry(preferredCountry), preferredCountry)
+      : DEFAULT_DIAL,
+    localNumber: raw,
+  };
 }
 
 function StepHeader({
@@ -104,7 +146,10 @@ export function RegisterForm() {
   const [step, setStep] = useState(1);
   const [data, setData] = useState<Partial<WizardData>>({});
   const initialPhone = splitPhoneParts();
-  const [phoneDialCode, setPhoneDialCode] = useState(initialPhone.dialCode);
+  const [phoneDialIso, setPhoneDialIso] = useState(initialPhone.dial.iso);
+  const phoneDial =
+    COUNTRY_DIAL_OPTIONS.find((option) => option.iso === phoneDialIso) ??
+    DEFAULT_DIAL;
   const [serverError, setServerError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -197,8 +242,8 @@ export function RegisterForm() {
             noValidate
             onSubmit={step1.handleSubmit((values) => {
               setData((prev) => ({ ...prev, ...values }));
-              const currentPhone = splitPhoneParts(data.phone);
-              setPhoneDialCode(currentPhone.dialCode);
+              const currentPhone = splitPhoneParts(data.phone, data.country);
+              setPhoneDialIso(currentPhone.dial.iso);
               step2.reset({
                 firstName: data.firstName || "",
                 lastName: data.lastName || "",
@@ -258,7 +303,7 @@ export function RegisterForm() {
             onSubmit={step2.handleSubmit((values) => {
               const localNumber = (values.phone ?? "").trim();
               const phone = localNumber
-                ? `${phoneDialCode} ${localNumber}`.trim()
+                ? `${phoneDial.code} ${localNumber}`.trim()
                 : "";
               setData((prev) => ({ ...prev, ...values, phone }));
               setStep(3);
@@ -280,28 +325,59 @@ export function RegisterForm() {
               error={step2.formState.errors.lastName?.message}
               {...step2.register("lastName")}
             />
-            <div className="grid grid-cols-[9rem_minmax(0,1fr)] gap-3">
-              <Select
-                label="Code"
-                value={phoneDialCode}
-                onChange={(e) => setPhoneDialCode(e.target.value)}
+
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="register-phone" className={fieldLabelClass}>
+                Phone number
+              </label>
+              <div
+                className={`flex min-h-10 overflow-hidden rounded-lg border bg-white transition focus-within:border-[#127E83] focus-within:ring-2 focus-within:ring-[#127E83]/25 ${
+                  step2.formState.errors.phone
+                    ? "border-[#E4574A]"
+                    : "border-[#CBD2D9]"
+                }`}
               >
-                {COUNTRY_DIAL_OPTIONS.map((option) => (
-                  <option key={`${option.country}-${option.code}`} value={option.code}>
-                    {option.code}
-                  </option>
-                ))}
-              </Select>
-              <Input
-                label="Phone"
-                type="tel"
-                autoComplete="tel-national"
-                inputMode="tel"
-                placeholder="Enter your phone number"
-                leftIcon={<Phone size={18} strokeWidth={1.75} />}
-                error={step2.formState.errors.phone?.message}
-                {...step2.register("phone")}
-              />
+                <div className="relative w-[7.25rem] shrink-0 border-r border-[#CBD2D9] bg-[#F4F7F9] sm:w-[7.75rem]">
+                  <label htmlFor="register-phone-dial" className="sr-only">
+                    Country calling code
+                  </label>
+                  <select
+                    id="register-phone-dial"
+                    value={phoneDial.iso}
+                    onChange={(e) => setPhoneDialIso(e.target.value)}
+                    className="h-full min-h-10 w-full appearance-none bg-transparent py-2 pl-3 pr-7 text-sm font-semibold tabular-nums text-[#012A3E] outline-none"
+                    aria-label="Country calling code"
+                  >
+                    {COUNTRY_DIAL_OPTIONS.map((option) => (
+                      <option key={option.iso} value={option.iso}>
+                        {option.iso} {option.code}
+                      </option>
+                    ))}
+                  </select>
+                  <span className="pointer-events-none absolute inset-y-0 right-2 flex items-center text-[#67717A]">
+                    <ChevronDown size={14} />
+                  </span>
+                </div>
+                <input
+                  id="register-phone"
+                  type="tel"
+                  autoComplete="tel-national"
+                  inputMode="tel"
+                  placeholder="Phone number"
+                  className="min-w-0 flex-1 border-0 bg-transparent px-3 py-2 text-sm text-[#002642] outline-none placeholder:text-[#94A3B8]"
+                  aria-invalid={!!step2.formState.errors.phone}
+                  {...step2.register("phone")}
+                />
+              </div>
+              {step2.formState.errors.phone?.message ? (
+                <p className={fieldErrorClass}>
+                  {step2.formState.errors.phone.message}
+                </p>
+              ) : (
+                <p className="text-xs text-[#67717A]">
+                  {phoneDial.country} · {phoneDial.code}
+                </p>
+              )}
             </div>
 
             <Select
@@ -309,7 +385,16 @@ export function RegisterForm() {
               leftIcon={<Globe2 size={18} strokeWidth={1.75} />}
               error={step2.formState.errors.country?.message}
               defaultValue=""
-              {...step2.register("country")}
+              {...step2.register("country", {
+                onChange: (event) => {
+                  const country = event.target.value as string;
+                  if (!country) return;
+                  const matched = COUNTRY_DIAL_OPTIONS.find(
+                    (option) => option.country === country
+                  );
+                  if (matched) setPhoneDialIso(matched.iso);
+                },
+              })}
             >
               <option value="" disabled>
                 Select your country
@@ -327,8 +412,8 @@ export function RegisterForm() {
                 variant="secondary"
                 className="flex-1"
                 onClick={() => {
-                  const currentPhone = splitPhoneParts(data.phone);
-                  setPhoneDialCode(currentPhone.dialCode);
+                  const currentPhone = splitPhoneParts(data.phone, data.country);
+                  setPhoneDialIso(currentPhone.dial.iso);
                   setStep(1);
                 }}
               >
@@ -408,8 +493,8 @@ export function RegisterForm() {
               variant="secondary"
               className="w-full"
               onClick={() => {
-                const currentPhone = splitPhoneParts(data.phone);
-                setPhoneDialCode(currentPhone.dialCode);
+                const currentPhone = splitPhoneParts(data.phone, data.country);
+                setPhoneDialIso(currentPhone.dial.iso);
                 step2.reset({
                   firstName: data.firstName || "",
                   lastName: data.lastName || "",

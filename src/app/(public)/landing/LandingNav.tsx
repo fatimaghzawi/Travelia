@@ -6,13 +6,13 @@ import { useState } from "react";
 const NAV_LINKS = [
   { href: "/destinations", label: "Destinations" },
   { href: "/#explore-by-mood", label: "Explore by Mood" },
-];
+] as const;
 
-type HeaderProps = {
+type LandingNavProps = {
   isAuthenticated?: boolean;
 };
 
-export function Header({ isAuthenticated = false }: HeaderProps) {
+export function LandingNav({ isAuthenticated = false }: LandingNavProps) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const primaryHref = isAuthenticated ? "/dashboard" : "/login";
