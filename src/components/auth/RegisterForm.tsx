@@ -146,7 +146,7 @@ export function RegisterForm() {
   const [step, setStep] = useState(1);
   const [data, setData] = useState<Partial<WizardData>>({});
   const initialPhone = splitPhoneParts();
-  const [phoneDialIso, setPhoneDialIso] = useState(initialPhone.dial.iso);
+  const [phoneDialIso, setPhoneDialIso] = useState<string>(initialPhone.dial.iso);
   const phoneDial =
     COUNTRY_DIAL_OPTIONS.find((option) => option.iso === phoneDialIso) ??
     DEFAULT_DIAL;
