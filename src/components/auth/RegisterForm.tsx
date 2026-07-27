@@ -256,7 +256,7 @@ export function RegisterForm() {
             className="mt-4 flex flex-col gap-3"
             noValidate
             onSubmit={step2.handleSubmit((values) => {
-              const localNumber = values.phone.trim();
+              const localNumber = (values.phone ?? "").trim();
               const phone = localNumber
                 ? `${phoneDialCode} ${localNumber}`.trim()
                 : "";
