@@ -1,5 +1,6 @@
 import { Resend } from "resend";
 import nodemailer from "nodemailer";
+import { getAppUrl } from "@/lib/app-url";
 import { logger } from "@/lib/logger";
 import {
   buildVerificationEmailHtml,
@@ -14,10 +15,6 @@ type SendEmailInput = {
   html: string;
   text?: string;
 };
-
-function appUrl(): string {
-  return process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
-}
 
 /** Normalize "Name email@x.com" → `Name <email@x.com>`. */
 function parseFromAddress(from: string): string {
@@ -248,7 +245,7 @@ export async function sendVerificationEmail(
     to,
     subject: "Verify your Travelia email",
     html: buildVerificationEmailHtml(name, token),
-    text: `Verify your email: ${appUrl()}/verify-email?token=${token}`,
+    text: `Verify your email: ${getAppUrl()}/verify-email?token=${token}`,
   });
 }
 
@@ -261,6 +258,6 @@ export async function sendPasswordResetEmail(
     to,
     subject: "Reset your Travelia password",
     html: buildPasswordResetEmailHtml(name, token),
-    text: `Reset your password: ${appUrl()}/reset-password?token=${token}`,
+    text: `Reset your password: ${getAppUrl()}/reset-password?token=${token}`,
   });
 }

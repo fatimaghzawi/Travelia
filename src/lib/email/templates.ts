@@ -1,3 +1,4 @@
+import { getAppUrl } from "@/lib/app-url";
 import { getLogoImageSrc } from "@/lib/email/logo";
 
 const BRAND = {
@@ -10,10 +11,6 @@ const BRAND = {
   border: "#d1e8ea",
   white: "#ffffff",
 } as const;
-
-function appUrl(): string {
-  return process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
-}
 
 function escapeHtml(value: string): string {
   return value
@@ -195,7 +192,7 @@ function emailLayout(options: EmailLayoutOptions): string {
                 © ${year} Travelia · Crafted for curious travelers
               </p>
               <p style="margin:0;font-size:12px;color:#94a3b8;">
-                <a href="${appUrl()}" style="color:${BRAND.teal};text-decoration:none;">Visit Travelia</a>
+                <a href="${getAppUrl()}" style="color:${BRAND.teal};text-decoration:none;">Visit Travelia</a>
               </p>
             </td>
           </tr>
@@ -209,7 +206,7 @@ function emailLayout(options: EmailLayoutOptions): string {
 }
 
 export function buildVerificationEmailHtml(name: string, token: string): string {
-  const link = `${appUrl()}/verify-email?token=${encodeURIComponent(token)}`;
+  const link = `${getAppUrl()}/verify-email?token=${encodeURIComponent(token)}`;
 
   return emailLayout({
     preheader: "One quick step to activate your Travelia account.",
@@ -225,7 +222,7 @@ export function buildVerificationEmailHtml(name: string, token: string): string 
 }
 
 export function buildPasswordResetEmailHtml(name: string, token: string): string {
-  const link = `${appUrl()}/reset-password?token=${encodeURIComponent(token)}`;
+  const link = `${getAppUrl()}/reset-password?token=${encodeURIComponent(token)}`;
 
   return emailLayout({
     preheader: "Reset your Travelia password securely.",

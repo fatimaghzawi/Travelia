@@ -46,9 +46,9 @@ type CenteredAuthLayoutProps = {
 
 export function CenteredAuthLayout({ children }: CenteredAuthLayoutProps) {
   return (
-    <main className="relative flex h-dvh max-h-dvh flex-col overflow-hidden">
+    <main className="relative flex min-h-dvh flex-col">
       <AuthBackground />
-      <div className="flex min-h-0 flex-1 flex-col items-center justify-center px-4 py-3 sm:py-4">
+      <div className="flex flex-1 flex-col items-center justify-center px-4 py-4 sm:py-6">
         <div className="w-full max-w-[380px] shrink rounded-2xl bg-white px-5 py-5 shadow-xl sm:px-7 sm:py-6">
           {children}
         </div>
@@ -65,10 +65,10 @@ type SplitAuthLayoutProps = {
 /** Register / forgot layout: left brand panel + right form card + footer. */
 export function SplitAuthLayout({ children }: SplitAuthLayoutProps) {
   return (
-    <main className="relative flex h-dvh max-h-dvh flex-col overflow-hidden">
+    <main className="relative flex min-h-dvh flex-col">
       <AuthBackground />
 
-      <div className="relative z-0 mx-auto grid min-h-0 w-full max-w-6xl flex-1 grid-cols-1 items-center gap-6 px-4 py-4 md:grid-cols-2 md:gap-10 md:px-10 lg:px-14">
+      <div className="relative z-0 mx-auto grid w-full max-w-6xl flex-1 grid-cols-1 items-start gap-6 px-4 py-4 md:min-h-0 md:grid-cols-2 md:items-center md:gap-10 md:px-10 lg:px-14">
         <section className="relative hidden h-full flex-col justify-center py-6 text-white md:flex">
           <div className="max-w-md">
             <h1 className="text-4xl font-bold leading-[1.15] tracking-tight lg:text-5xl">
@@ -107,7 +107,7 @@ export function SplitAuthLayout({ children }: SplitAuthLayoutProps) {
           </svg>
         </section>
 
-        <div className="mx-auto w-full max-w-[420px] md:mx-0 md:justify-self-end">
+        <div className="mx-auto w-full max-w-[420px] self-start md:mx-0 md:self-auto md:justify-self-end">
           <div className="relative rounded-3xl bg-white px-5 py-5 shadow-2xl sm:px-8 sm:py-7">
             {children}
           </div>

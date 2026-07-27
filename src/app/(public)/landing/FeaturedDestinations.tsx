@@ -58,7 +58,7 @@ export async function FeaturedDestinations() {
                       src={destination.thumbnail || "/images/dest2.jpg"}
                       alt={destination.title}
                       fill
-                      sizes="360px"
+                      sizes="(max-width: 700px) 100vw, (max-width: 980px) 50vw, 360px"
                     />
                   </div>
                   <div className="lp-card__body">

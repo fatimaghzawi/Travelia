@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { auth } from "@/auth";
+import { Header } from "./landing/Header";
 import { Hero } from "./landing/Hero";
 import { HowItWorks } from "./landing/HowItWorks";
 import { FeaturedDestinations } from "./landing/FeaturedDestinations";
@@ -28,6 +29,7 @@ export default async function HomePage() {
   return (
     <div className="lp">
       <div className="lp-shell">
+        <Header isAuthenticated={isAuthenticated} />
         <Hero isAuthenticated={isAuthenticated} />
         <HowItWorks />
         <FeaturedDestinations />

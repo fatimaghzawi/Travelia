@@ -1,4 +1,5 @@
 import Stripe from "stripe";
+import { getAppUrl } from "@/lib/app-url";
 
 let stripe: Stripe | null = null;
 
@@ -14,7 +15,7 @@ export function getStripe(): Stripe {
 }
 
 export function appBaseUrl(): string {
-  return process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  return getAppUrl();
 }
 
 /** Stripe expects the smallest currency unit (e.g. cents for USD). */

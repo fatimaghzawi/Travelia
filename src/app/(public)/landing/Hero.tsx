@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Header } from "./Header";
 
 type HeroProps = {
   isAuthenticated?: boolean;
@@ -15,11 +14,10 @@ export function Hero({ isAuthenticated = false }: HeroProps) {
           alt="Cliffside blue-domed church overlooking the sea in Santorini, Greece"
           fill
           priority
-          sizes="1120px"
+          sizes="100vw"
           className="lp-hero__img"
         />
         <div className="lp-hero__veil" aria-hidden />
-        <Header isAuthenticated={isAuthenticated} />
         <div className="lp-hero__content">
           <h1>
             Plan trips.

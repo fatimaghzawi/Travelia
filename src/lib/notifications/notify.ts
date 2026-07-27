@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { getAppUrl } from "@/lib/app-url";
 import { connectDB } from "@/lib/db/mongoose";
 import { Notification, User } from "@/models";
 import type { NotificationType } from "@/models/notification.model";
@@ -19,14 +20,10 @@ export type NotifyUserInput = {
   ctaLabel?: string;
 };
 
-function appUrl() {
-  return process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
-}
-
 function absoluteLink(link?: string | null) {
-  if (!link) return `${appUrl()}/dashboard/notifications`;
+  if (!link) return `${getAppUrl()}/dashboard/notifications`;
   if (link.startsWith("http")) return link;
-  return `${appUrl()}${link.startsWith("/") ? link : `/${link}`}`;
+  return `${getAppUrl()}${link.startsWith("/") ? link : `/${link}`}`;
 }
 
 /**

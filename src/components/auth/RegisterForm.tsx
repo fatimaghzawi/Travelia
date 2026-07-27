@@ -13,7 +13,10 @@ import {
   type RegisterStep2Input,
   type RegisterStep3Input,
 } from "@/validators/auth.validator";
-import { COUNTRY_OPTIONS } from "@/lib/constants/countries";
+import {
+  COUNTRY_DIAL_OPTIONS,
+  COUNTRY_OPTIONS,
+} from "@/lib/constants/countries";
 import {
   PRIVACY_POLICY,
   TERMS_OF_SERVICE,
@@ -41,6 +44,36 @@ const STEPS = [
 type WizardData = RegisterStep1Input &
   RegisterStep2Input &
   RegisterStep3Input;
+
+const DEFAULT_DIAL_CODE = "+1";
+
+function splitPhoneParts(value?: string | null) {
+  const raw = (value || "").trim();
+  const matchedDial = COUNTRY_DIAL_OPTIONS.find(
+    (option) => raw === option.code || raw.startsWith(`${option.code} `)
+  );
+
+  if (!raw) {
+    return { dialCode: DEFAULT_DIAL_CODE, localNumber: "" };
+  }
+
+  if (matchedDial) {
+    return {
+      dialCode: matchedDial.code,
+      localNumber: raw.slice(matchedDial.code.length).trim(),
+    };
+  }
+
+  if (raw.startsWith("+")) {
+    const [dialCode, ...rest] = raw.split(/\s+/);
+    return {
+      dialCode: dialCode || DEFAULT_DIAL_CODE,
+      localNumber: rest.join(" ").trim(),
+    };
+  }
+
+  return { dialCode: DEFAULT_DIAL_CODE, localNumber: raw };
+}
 
 function StepHeader({
   step,
@@ -70,6 +103,8 @@ export function RegisterForm() {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [data, setData] = useState<Partial<WizardData>>({});
+  const initialPhone = splitPhoneParts();
+  const [phoneDialCode, setPhoneDialCode] = useState(initialPhone.dialCode);
   const [serverError, setServerError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -85,7 +120,7 @@ export function RegisterForm() {
     defaultValues: {
       firstName: "",
       lastName: "",
-      phone: "",
+      phone: initialPhone.localNumber,
       country: "",
     },
   });
@@ -162,6 +197,14 @@ export function RegisterForm() {
             noValidate
             onSubmit={step1.handleSubmit((values) => {
               setData((prev) => ({ ...prev, ...values }));
+              const currentPhone = splitPhoneParts(data.phone);
+              setPhoneDialCode(currentPhone.dialCode);
+              step2.reset({
+                firstName: data.firstName || "",
+                lastName: data.lastName || "",
+                phone: currentPhone.localNumber,
+                country: data.country || "",
+              });
               setStep(2);
             })}
           >
@@ -213,7 +256,11 @@ export function RegisterForm() {
             className="mt-4 flex flex-col gap-3"
             noValidate
             onSubmit={step2.handleSubmit((values) => {
-              setData((prev) => ({ ...prev, ...values }));
+              const localNumber = values.phone.trim();
+              const phone = localNumber
+                ? `${phoneDialCode} ${localNumber}`.trim()
+                : "";
+              setData((prev) => ({ ...prev, ...values, phone }));
               setStep(3);
             })}
           >
@@ -233,15 +280,29 @@ export function RegisterForm() {
               error={step2.formState.errors.lastName?.message}
               {...step2.register("lastName")}
             />
-            <Input
-              label="Phone"
-              type="tel"
-              autoComplete="tel"
-              placeholder="Enter your phone number"
-              leftIcon={<Phone size={18} strokeWidth={1.75} />}
-              error={step2.formState.errors.phone?.message}
-              {...step2.register("phone")}
-            />
+            <div className="grid grid-cols-[9rem_minmax(0,1fr)] gap-3">
+              <Select
+                label="Code"
+                value={phoneDialCode}
+                onChange={(e) => setPhoneDialCode(e.target.value)}
+              >
+                {COUNTRY_DIAL_OPTIONS.map((option) => (
+                  <option key={`${option.country}-${option.code}`} value={option.code}>
+                    {option.code}
+                  </option>
+                ))}
+              </Select>
+              <Input
+                label="Phone"
+                type="tel"
+                autoComplete="tel-national"
+                inputMode="tel"
+                placeholder="Enter your phone number"
+                leftIcon={<Phone size={18} strokeWidth={1.75} />}
+                error={step2.formState.errors.phone?.message}
+                {...step2.register("phone")}
+              />
+            </div>
 
             <Select
               label="Country"
@@ -265,7 +326,11 @@ export function RegisterForm() {
                 type="button"
                 variant="secondary"
                 className="flex-1"
-                onClick={() => setStep(1)}
+                onClick={() => {
+                  const currentPhone = splitPhoneParts(data.phone);
+                  setPhoneDialCode(currentPhone.dialCode);
+                  setStep(1);
+                }}
               >
                 Back
               </Button>
@@ -342,7 +407,17 @@ export function RegisterForm() {
               type="button"
               variant="secondary"
               className="w-full"
-              onClick={() => setStep(2)}
+              onClick={() => {
+                const currentPhone = splitPhoneParts(data.phone);
+                setPhoneDialCode(currentPhone.dialCode);
+                step2.reset({
+                  firstName: data.firstName || "",
+                  lastName: data.lastName || "",
+                  phone: currentPhone.localNumber,
+                  country: data.country || "",
+                });
+                setStep(2);
+              }}
               disabled={submitting}
             >
               <span className="inline-flex items-center gap-1.5">
