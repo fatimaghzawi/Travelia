@@ -125,10 +125,15 @@ export function DestinationJourneyBuilder({
 
   function addActivity(id: string) {
     if (!requireAuth()) return;
+    if (!selectedPackageId) {
+      setError("Select a trip departure before adding experiences");
+      return;
+    }
     const activity = activities.find((a) => a.id === id);
     if (!activity || !activity.isAvailable || activity.remainingSlots <= 0) {
       return;
     }
+    setError(null);
     setJourneyIds((prev) => (prev.includes(id) ? prev : [...prev, id]));
   }
 
@@ -139,7 +144,14 @@ export function DestinationJourneyBuilder({
   function togglePackage(pkg: TripPackageCardData) {
     if (!requireAuth()) return;
     if (pkg.status === "full" || pkg.remainingSlots <= 0) return;
-    setSelectedPackageId((prev) => (prev === pkg.id ? null : pkg.id));
+    setSelectedPackageId((prev) => {
+      if (prev === pkg.id) {
+        setJourneyIds([]);
+        return null;
+      }
+      return pkg.id;
+    });
+    setError(null);
   }
 
   function onDragStart(e: DragEvent, activityId: string) {
@@ -150,14 +162,18 @@ export function DestinationJourneyBuilder({
   function onDrop(e: DragEvent) {
     e.preventDefault();
     setDragOver(false);
+    if (!selectedPackageId) {
+      setError("Select a trip departure before adding experiences");
+      return;
+    }
     const id = e.dataTransfer.getData("text/activity-id");
     if (id) addActivity(id);
   }
 
   function openCheckout() {
     if (!requireAuth()) return;
-    if (!selectedPackage && journeyActivities.length === 0) {
-      setError("Drag at least one experience into your journey");
+    if (!selectedPackage) {
+      setError("Select a trip departure to continue");
       return;
     }
     setError(null);
@@ -254,8 +270,8 @@ export function DestinationJourneyBuilder({
 
         {packages.length === 0 ? (
           <div className="rounded-xl border border-dashed border-[#d1e8ea] bg-[#F4FAFB] px-4 py-6 text-center text-sm text-[#67717A]">
-            No upcoming trips — you can still build an experiences-only journey
-            below.
+            No upcoming trips — experiences can be added once a departure is
+            available.
           </div>
         ) : (
           <ul className="-mx-1 flex gap-2.5 overflow-x-auto px-1 pb-1 [-ms-overflow-style:none] [scrollbar-width:none] sm:gap-3 [&::-webkit-scrollbar]:hidden">
@@ -320,7 +336,7 @@ export function DestinationJourneyBuilder({
         )}
         {openPackages.length === 0 && packages.length > 0 ? (
           <p className="mt-2 text-xs text-[#67717A]">
-            All listed departures are full — build with experiences only.
+            All listed departures are full — check back for new dates.
           </p>
         ) : null}
       </section>
@@ -349,8 +365,8 @@ export function DestinationJourneyBuilder({
                 Your journey
               </h2>
               <p className="mt-2 text-sm leading-relaxed text-[#67717A]">
-                Drag experiences here to shape your stay in {placeName}. Pay once
-                when you&apos;re happy.
+                Pick a departure, then drag experiences here to shape your stay
+                in {placeName}. Pay once when you&apos;re happy.
               </p>
             </div>
           </div>
@@ -362,7 +378,17 @@ export function DestinationJourneyBuilder({
                 : "border-[#c9dde0] bg-white/50"
             }`}
           >
-            {!selectedPackage && journeyActivities.length === 0 ? (
+            {!selectedPackage ? (
+              <div className="flex h-full min-h-[10rem] flex-col items-center justify-center gap-2 px-2 text-center">
+                <GripVertical className="h-6 w-6 text-[#94A3B8]" />
+                <p className="text-sm font-medium text-[#012A3E]">
+                  Select a trip departure first
+                </p>
+                <p className="text-xs text-[#67717A]">
+                  Then add experiences from the list
+                </p>
+              </div>
+            ) : journeyActivities.length === 0 ? (
               <div className="flex h-full min-h-[10rem] flex-col items-center justify-center gap-2 px-2 text-center">
                 <GripVertical className="h-6 w-6 text-[#94A3B8]" />
                 <p className="text-sm font-medium text-[#012A3E]">
@@ -473,9 +499,7 @@ export function DestinationJourneyBuilder({
             <button
               type="button"
               onClick={openCheckout}
-              disabled={
-                !selectedPackage && journeyActivities.length === 0
-              }
+              disabled={!selectedPackage}
               className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#127E83] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#0f6d71] disabled:cursor-not-allowed disabled:opacity-45"
             >
               Continue to payment
@@ -496,7 +520,8 @@ export function DestinationJourneyBuilder({
                 Experiences in {placeName}
               </h3>
               <p className="mt-1 text-sm text-[#67717A]">
-                ~{recommendedDays} day trip · drag cards into your journey
+                ~{recommendedDays} day trip · pick a departure, then add
+                experiences
               </p>
             </div>
             <span className="text-sm font-medium text-[#127E83]">
@@ -514,21 +539,22 @@ export function DestinationJourneyBuilder({
                 const soldOut =
                   activity.remainingSlots <= 0 || !activity.isAvailable;
                 const inJourney = journeyIds.includes(activity.id);
+                const packageRequired = !selectedPackageId;
                 const image = activity.image || "/images/dest2.jpg";
 
                 return (
                   <article
                     key={activity.id}
-                    draggable={!soldOut && !inJourney}
+                    draggable={!soldOut && !inJourney && !packageRequired}
                     onDragStart={(e) => {
-                      if (soldOut || inJourney) {
+                      if (soldOut || inJourney || packageRequired) {
                         e.preventDefault();
                         return;
                       }
                       onDragStart(e, activity.id);
                     }}
                     className={`group flex w-[11.5rem] shrink-0 flex-col overflow-hidden rounded-xl bg-white shadow-[0_6px_20px_rgba(1,42,62,0.08)] ring-1 transition sm:w-full ${
-                      soldOut
+                      soldOut || packageRequired
                         ? "opacity-60 ring-[#e8eef0]"
                         : inJourney
                           ? "ring-[#127E83] shadow-[0_10px_28px_rgba(18,126,131,0.18)]"
@@ -577,10 +603,10 @@ export function DestinationJourneyBuilder({
                       </div>
                       <button
                         type="button"
-                        disabled={soldOut || inJourney}
+                        disabled={soldOut || inJourney || packageRequired}
                         onClick={() => addActivity(activity.id)}
                         className={`inline-flex w-full items-center justify-center gap-1.5 rounded-lg px-2.5 py-2 text-xs font-semibold transition ${
-                          soldOut
+                          soldOut || packageRequired
                             ? "bg-[#e8eef0] text-[#94A3B8]"
                             : inJourney
                               ? "bg-[#e7f7f8] text-[#127E83]"
@@ -589,6 +615,8 @@ export function DestinationJourneyBuilder({
                       >
                         {soldOut ? (
                           "Unavailable"
+                        ) : packageRequired ? (
+                          "Pick departure first"
                         ) : inJourney ? (
                           "In journey"
                         ) : (

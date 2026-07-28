@@ -26,6 +26,11 @@ export default auth((req) => {
 
 export const config = {
   matcher: [
+    // Auth pages: redirect already-logged-in users away (see authConfig.authorized)
+    "/login",
+    "/register",
+    "/forgot-password",
+    "/reset-password",
     "/uploads/journals/:path*",
     "/dashboard/:path*",
     "/admin/:path*",

@@ -111,6 +111,15 @@ export async function createJourneyCheckout(
       : null;
 
   const uniqueActivityIds = [...new Set(input.activityIds.map(String))];
+
+  if (!input.tripPackageId) {
+    throw new AppError(
+      "Select a trip package before booking experiences",
+      400,
+      "PACKAGE_REQUIRED"
+    );
+  }
+
   const lineItems: LineItem[] = [];
   const createdBookingIds: string[] = [];
   /** Shared travel day for the journey — package departure when present. */
@@ -118,7 +127,7 @@ export async function createJourneyCheckout(
   journeyTravelDate.setHours(0, 0, 0, 0);
 
   try {
-    // --- Optional trip package seat ---
+    // --- Trip package seat (required before any activities) ---
     if (input.tripPackageId) {
       const tripPackage = await TripPackage.findById(input.tripPackageId);
       if (!tripPackage || !tripPackage.isPublished) {

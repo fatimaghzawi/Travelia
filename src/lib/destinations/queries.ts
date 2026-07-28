@@ -271,21 +271,17 @@ export async function listPublishedDestinations(
   }
   const search = options.search?.trim();
   if (search) {
-    // Prefer text index when query is multi-token / longer; regex for short fuzzy
-    if (search.length >= 3) {
-      filter.$text = { $search: search };
-    } else {
-      filter.$or = [
-        { title: { $regex: search, $options: "i" } },
-        { country: { $regex: search, $options: "i" } },
-        { city: { $regex: search, $options: "i" } },
-      ];
-    }
+    // Partial / prefix match (first letters). $text only matches whole words,
+    // so typing "Par" would not find "Paris".
+    const pattern = search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    filter.$or = [
+      { title: { $regex: pattern, $options: "i" } },
+      { country: { $regex: pattern, $options: "i" } },
+      { city: { $regex: pattern, $options: "i" } },
+    ];
   }
 
-  const sortSpec = filter.$text
-    ? ({ score: { $meta: "textScore" } } as Record<string, { $meta: string }>)
-    : destinationSort(sort);
+  const sortSpec = destinationSort(sort);
 
   const destinations = await Destination.find(filter)
     .populate("categoryId", "name")

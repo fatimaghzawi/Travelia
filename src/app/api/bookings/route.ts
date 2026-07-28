@@ -24,10 +24,17 @@ const travelerCreateBookingSchema = z
     usePassportDetails: z.boolean().default(false),
     notes: z.string().trim().max(500).optional().nullable(),
   })
-  .refine((data) => Boolean(data.tripPackageId) || Boolean(data.activityId), {
-    message: "Select a trip package or an activity to book",
+  .refine((data) => Boolean(data.tripPackageId), {
+    message: "Select a trip package to book",
     path: ["tripPackageId"],
-  });
+  })
+  .refine(
+    (data) => !data.activityId || Boolean(data.tripPackageId),
+    {
+      message: "Experiences can only be booked with a trip package",
+      path: ["activityId"],
+    }
+  );
 
 export const POST = apiHandler(async (request: NextRequest) => {
   const sessionUser = await requireTraveler();

@@ -12,6 +12,7 @@ import {
   Compass,
   Flag,
   Hotel,
+  Loader2,
   MapPin,
   Plane,
   Plus,
@@ -170,6 +171,8 @@ export function TripDetailUi({
   });
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  const [addingChecklist, setAddingChecklist] = useState(false);
+  const [addingExpense, setAddingExpense] = useState(false);
 
   const primaryChecklist = checklists[0] ?? null;
   const thumb =
@@ -264,8 +267,8 @@ export function TripDetailUi({
   }
 
   async function addChecklistItem() {
-    if (!newItem.trim() || readOnly) return;
-    setPending(true);
+    if (!newItem.trim() || readOnly || addingChecklist) return;
+    setAddingChecklist(true);
     setError(null);
     const text = newItem.trim();
     try {
@@ -296,7 +299,7 @@ export function TripDetailUi({
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not add item");
     } finally {
-      setPending(false);
+      setAddingChecklist(false);
     }
   }
 
@@ -346,13 +349,13 @@ export function TripDetailUi({
 
   async function addExpense(e: FormEvent) {
     e.preventDefault();
-    if (readOnly) return;
+    if (readOnly || addingExpense) return;
     const amount = Number(expenseForm.amount);
     if (!expenseForm.title.trim() || !Number.isFinite(amount) || amount < 0) {
       setError("Add a title and amount");
       return;
     }
-    setPending(true);
+    setAddingExpense(true);
     setError(null);
     try {
       const res = await fetch(`/api/trips/${trip.id}/expenses`, {
@@ -372,7 +375,7 @@ export function TripDetailUi({
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not add expense");
     } finally {
-      setPending(false);
+      setAddingExpense(false);
     }
   }
 
@@ -782,16 +785,27 @@ export function TripDetailUi({
                           }
                         }}
                         placeholder="Add waypoint…"
-                        className="min-w-0 flex-1 border-0 bg-transparent px-4 py-3 text-sm text-white placeholder:text-white/40 outline-none"
+                        disabled={addingChecklist}
+                        className="min-w-0 flex-1 border-0 bg-transparent px-4 py-3 text-sm text-white placeholder:text-white/40 outline-none disabled:opacity-60"
                       />
                       <button
                         type="button"
-                        disabled={pending || !newItem.trim()}
+                        disabled={addingChecklist || !newItem.trim()}
                         onClick={addChecklistItem}
-                        className="inline-flex items-center justify-center gap-1 border-t border-[#9aebed]/30 bg-[#9aebed] px-4 py-3 text-sm font-semibold text-[#012A3E] disabled:opacity-50 sm:border-t-0"
+                        aria-busy={addingChecklist}
+                        className="inline-flex min-w-[7.5rem] items-center justify-center gap-1.5 border-t border-[#9aebed]/30 bg-[#9aebed] px-4 py-3 text-sm font-semibold text-[#012A3E] disabled:opacity-50 sm:border-t-0"
                       >
-                        <Plus className="h-4 w-4" />
-                        Plot
+                        {addingChecklist ? (
+                          <>
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            Adding…
+                          </>
+                        ) : (
+                          <>
+                            <Plus className="h-4 w-4" />
+                            Plot
+                          </>
+                        )}
                       </button>
                     </div>
                   ) : null}
@@ -875,7 +889,8 @@ export function TripDetailUi({
                           }))
                         }
                         placeholder="What did you spend on?"
-                        className="w-full rounded-xl border border-[#e5e7eb] bg-white px-3 py-2.5 text-sm outline-none focus:border-[#127E83]"
+                        disabled={addingExpense}
+                        className="w-full rounded-xl border border-[#e5e7eb] bg-white px-3 py-2.5 text-sm outline-none focus:border-[#127E83] disabled:opacity-60"
                         required
                       />
                       <div className="flex flex-col gap-3 sm:flex-row">
@@ -887,7 +902,8 @@ export function TripDetailUi({
                               category: e.target.value,
                             }))
                           }
-                          className="rounded-xl border border-[#e5e7eb] bg-white px-3 py-2.5 text-sm text-[#012A3E] outline-none focus:border-[#127E83] sm:w-40"
+                          disabled={addingExpense}
+                          className="rounded-xl border border-[#e5e7eb] bg-white px-3 py-2.5 text-sm text-[#012A3E] outline-none focus:border-[#127E83] disabled:opacity-60 sm:w-40"
                         >
                           {CATEGORIES.map((c) => (
                             <option key={c} value={c}>
@@ -911,17 +927,28 @@ export function TripDetailUi({
                               }))
                             }
                             placeholder="0.00"
-                            className="w-full rounded-xl border border-[#e5e7eb] bg-white py-2.5 pr-3 pl-7 text-sm outline-none focus:border-[#127E83]"
+                            disabled={addingExpense}
+                            className="w-full rounded-xl border border-[#e5e7eb] bg-white py-2.5 pr-3 pl-7 text-sm outline-none focus:border-[#127E83] disabled:opacity-60"
                             required
                           />
                         </div>
                         <button
                           type="submit"
-                          disabled={pending}
-                          className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#012A3E] px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
+                          disabled={addingExpense}
+                          aria-busy={addingExpense}
+                          className="inline-flex min-w-[6.5rem] items-center justify-center gap-1.5 rounded-xl bg-[#012A3E] px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
                         >
-                          <Plus className="h-4 w-4" />
-                          Add
+                          {addingExpense ? (
+                            <>
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                              Adding…
+                            </>
+                          ) : (
+                            <>
+                              <Plus className="h-4 w-4" />
+                              Add
+                            </>
+                          )}
                         </button>
                       </div>
                     </form>

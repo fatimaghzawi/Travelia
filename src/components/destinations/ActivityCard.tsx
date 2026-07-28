@@ -75,6 +75,7 @@ export function ActivityCard({
               requiresTravelDocuments={requiresTravelDocuments}
               isAuthenticated={isAuthenticated}
               disabled={soldOut || !activity.isAvailable}
+              label="Add via journey"
             />
           </div>
         </div>

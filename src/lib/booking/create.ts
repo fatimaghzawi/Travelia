@@ -69,6 +69,14 @@ export async function createBooking(
     );
   }
 
+  if (input.activityId && !input.tripPackageId) {
+    throw new AppError(
+      "Book a trip package before booking an experience",
+      400,
+      "PACKAGE_REQUIRED"
+    );
+  }
+
   let price = destination.estimatedBudget;
   let activityId: string | null = null;
   let tripPackageId: string | null = null;

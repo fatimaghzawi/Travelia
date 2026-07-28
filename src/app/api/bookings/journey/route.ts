@@ -16,10 +16,14 @@ const journeySchema = z
     usePassportDetails: z.boolean().default(false),
     notes: z.string().trim().max(500).optional().nullable(),
   })
+  .refine((data) => Boolean(data.tripPackageId), {
+    message: "Select a trip package to continue",
+    path: ["tripPackageId"],
+  })
   .refine(
-    (data) => Boolean(data.tripPackageId) || data.activityIds.length > 0,
+    (data) => data.activityIds.length === 0 || Boolean(data.tripPackageId),
     {
-      message: "Add a trip or at least one activity to your journey",
+      message: "Experiences can only be booked with a trip package",
       path: ["activityIds"],
     }
   );

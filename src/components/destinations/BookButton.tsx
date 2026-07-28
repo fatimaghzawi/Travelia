@@ -103,6 +103,12 @@ export function BookButton({
       );
       return;
     }
+    if (activityId && !tripPackageId) {
+      document
+        .getElementById("build-journey")
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
     setOpen(true);
   }
 

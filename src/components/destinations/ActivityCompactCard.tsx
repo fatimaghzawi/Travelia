@@ -80,7 +80,9 @@ export function ActivityCompactCard({
       );
       return;
     }
-    setOpen(true);
+    document
+      .getElementById("build-journey")
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   async function submit(e: FormEvent) {
@@ -220,7 +222,7 @@ export function ActivityCompactCard({
                   : "bg-[#127E83] text-white group-hover:bg-[#0f6d71]"
               }`}
             >
-              {soldOut ? "Unavailable" : "Book experience"}
+              {soldOut ? "Unavailable" : "Add via journey"}
             </span>
           </div>
         </button>
