@@ -490,6 +490,108 @@ html[data-reduce-motion="true"] *::after {
   -webkit-backdrop-filter: blur(12px) saturate(1.1);
 }
 
+/* Admin dark theme */
+html[data-theme="dark"] .admin-shell {
+  background:
+    radial-gradient(90% 60% at 8% 0%, rgba(81, 165, 214, 0.12), transparent 55%),
+    radial-gradient(70% 50% at 100% 15%, rgba(18, 126, 131, 0.14), transparent 50%),
+    linear-gradient(165deg, #07141c 0%, #0a1c26 48%, #0f2430 100%);
+  color: #e8f0f2;
+}
+
+html[data-theme="dark"] .admin-shell__glow::before {
+  background: rgba(18, 126, 131, 0.22);
+  opacity: 0.5;
+}
+
+html[data-theme="dark"] .admin-shell__glow::after {
+  background: rgba(81, 165, 214, 0.16);
+  opacity: 0.45;
+}
+
+html[data-theme="dark"] .admin-panel {
+  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(15, 36, 48, 0.72);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 12px 36px rgba(0, 0, 0, 0.28);
+}
+
+html[data-theme="dark"] .admin-shell .bg-white,
+html[data-theme="dark"] .admin-shell .bg-white\/70,
+html[data-theme="dark"] .admin-shell .bg-white\/80,
+html[data-theme="dark"] .admin-shell .bg-white\/95 {
+  background-color: rgba(15, 36, 48, 0.92) !important;
+}
+
+html[data-theme="dark"] .admin-shell .bg-\[\#F4FAFB\],
+html[data-theme="dark"] .admin-shell .bg-\[\#F4FAFB\]\/95,
+html[data-theme="dark"] .admin-shell .bg-surface-muted,
+html[data-theme="dark"] .admin-shell .bg-surface-muted\/95,
+html[data-theme="dark"] .admin-shell .hover\:bg-\[\#F4FAFB\]:hover,
+html[data-theme="dark"] .admin-shell .hover\:bg-surface-muted:hover,
+html[data-theme="dark"] .admin-shell .hover\:bg-white:hover {
+  background-color: rgba(18, 42, 56, 0.95) !important;
+}
+
+html[data-theme="dark"] .admin-shell .bg-surface {
+  background-color: rgba(15, 36, 48, 0.92) !important;
+}
+
+html[data-theme="dark"] .admin-shell .text-ink,
+html[data-theme="dark"] .admin-shell .text-navy-900,
+html[data-theme="dark"] .admin-shell .text-navy-950,
+html[data-theme="dark"] .admin-shell [class*="text-[#012A3E]"],
+html[data-theme="dark"] .admin-shell [class*="text-[#002642]"] {
+  color: #e8f0f2 !important;
+}
+
+html[data-theme="dark"] .admin-shell .text-ink-muted,
+html[data-theme="dark"] .admin-shell .text-ink-soft,
+html[data-theme="dark"] .admin-shell [class*="text-[#67717A]"],
+html[data-theme="dark"] .admin-shell [class*="text-[#94A3B8]"] {
+  color: #b5c6d0 !important;
+}
+
+html[data-theme="dark"] .admin-shell .text-teal-600,
+html[data-theme="dark"] .admin-shell .text-teal-700,
+html[data-theme="dark"] .admin-shell .hover\:text-teal-600:hover,
+html[data-theme="dark"] .admin-shell .hover\:text-teal-700:hover {
+  color: #5fd0d4 !important;
+}
+
+html[data-theme="dark"] .admin-shell .border-border,
+html[data-theme="dark"] .admin-shell .border-\[\#d1e8ea\],
+html[data-theme="dark"] .admin-shell .border-\[\#e8eef0\],
+html[data-theme="dark"] .admin-shell [class*="border-[#d1e8ea]"],
+html[data-theme="dark"] .admin-shell [class*="border-[#e8eef0]"] {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+html[data-theme="dark"] .admin-shell input:not([type="checkbox"]):not([type="radio"]),
+html[data-theme="dark"] .admin-shell select,
+html[data-theme="dark"] .admin-shell textarea {
+  background-color: rgba(15, 36, 48, 0.9);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #e8f0f2;
+}
+
+html[data-theme="dark"] .admin-shell input::placeholder,
+html[data-theme="dark"] .admin-shell textarea::placeholder {
+  color: #8aa0ae;
+}
+
+html[data-theme="dark"] .admin-shell .bg-rose-50,
+html[data-theme="dark"] .admin-shell .border-rose-200 {
+  background-color: rgba(228, 87, 74, 0.12) !important;
+  border-color: rgba(228, 87, 74, 0.35) !important;
+  color: #f5b4ae;
+}
+
+html[data-theme="dark"] .admin-shell .text-rose-700 {
+  color: #f5b4ae !important;
+}
+
 @keyframes journeyIn {
   from {
     opacity: 0;

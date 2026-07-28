@@ -9,13 +9,19 @@ import {
   Notification,
 } from "@/models";
 import { ROLES } from "@/lib/constants/roles";
+import {
+  periodRange,
+  type StatsPeriod,
+} from "@/lib/admin/stats-period";
 
 /** Aggregates every metric shown on the admin dashboard in one round trip. */
-export async function getAdminStats(adminId: string) {
+export async function getAdminStats(
+  adminId: string,
+  period: StatsPeriod = "week"
+) {
   await connectDB();
 
-  const now = new Date();
-  const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  const { from, bucketFormat } = periodRange(period);
 
   const [
     totalUsers,
@@ -23,9 +29,9 @@ export async function getAdminStats(adminId: string) {
     topDestinations,
     liveTrips,
     revenueByCurrency,
-    bookingsThisWeek,
+    bookingsInPeriod,
     moodBreakdown,
-    bookingsPerDay,
+    bookingsPerBucket,
     adminUnreadNotifications,
     packageOccupancy,
   ] = await Promise.all([
@@ -45,7 +51,7 @@ export async function getAdminStats(adminId: string) {
     Trip.countDocuments({ status: "ongoing" }),
 
     Payment.aggregate([
-      { $match: { status: "completed" } },
+      { $match: { status: "completed", createdAt: { $gte: from } } },
       {
         $group: {
           _id: { $ifNull: ["$currency", "USD"] },
@@ -54,7 +60,7 @@ export async function getAdminStats(adminId: string) {
       },
     ]),
 
-    Booking.countDocuments({ createdAt: { $gte: weekAgo } }),
+    Booking.countDocuments({ createdAt: { $gte: from } }),
 
     // Share of published destinations tagged with each mood (catalog mix)
     Destination.aggregate([
@@ -81,10 +87,12 @@ export async function getAdminStats(adminId: string) {
     ]),
 
     Booking.aggregate([
-      { $match: { createdAt: { $gte: weekAgo } } },
+      { $match: { createdAt: { $gte: from } } },
       {
         $group: {
-          _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+          _id: {
+            $dateToString: { format: bucketFormat, date: "$createdAt" },
+          },
           count: { $sum: 1 },
         },
       },
@@ -137,6 +145,7 @@ export async function getAdminStats(adminId: string) {
     );
 
   return {
+    period,
     totals: {
       users: totalUsers,
       liveTrips,
@@ -147,7 +156,8 @@ export async function getAdminStats(adminId: string) {
           total: r.total,
         })
       ),
-      bookingsThisWeek,
+      bookingsThisWeek: bookingsInPeriod,
+      bookingsInPeriod,
     },
     unreadNotifications: adminUnreadNotifications,
     verificationFunnel: funnel,
@@ -172,6 +182,6 @@ export async function getAdminStats(adminId: string) {
       name: m.name,
       percent: moodTotal > 0 ? Math.round((m.count / moodTotal) * 100) : 0,
     })),
-    bookingsTimeline: bookingsPerDay,
+    bookingsTimeline: bookingsPerBucket,
   };
 }

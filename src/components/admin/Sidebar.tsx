@@ -60,11 +60,11 @@ export function Sidebar() {
 
   return (
     <>
-      <div className="sticky top-0 z-40 flex items-center gap-3 border-b border-[#d1e8ea] bg-[#F4FAFB]/95 px-3 py-3 backdrop-blur-md lg:hidden">
+      <div className="sticky top-0 z-40 flex items-center gap-3 border-b border-border bg-surface-muted/95 px-3 py-3 backdrop-blur-md lg:hidden">
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#d1e8ea] bg-white text-[#012A3E]"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-surface text-ink"
           aria-label="Open admin menu"
         >
           <Menu className="h-5 w-5" />

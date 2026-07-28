@@ -25,13 +25,19 @@ import { ProgressRing, MoodArcGauge } from "@/components/admin/Charts";
 import { VerificationFunnel } from "@/components/admin/VerificationFunnel";
 import { WorldMap } from "@/components/admin/WorldMap";
 import { api } from "@/lib/api/client";
+import {
+  periodRange,
+  type StatsPeriod,
+} from "@/lib/admin/stats-period";
 
 interface DashboardStats {
+  period?: StatsPeriod;
   totals: {
     users: number;
     liveTrips: number;
     revenue: number;
     bookingsThisWeek: number;
+    bookingsInPeriod?: number;
   };
   verificationFunnel: { unverified: number; pending: number; verified: number; rejected: number };
   topDestinations: {
@@ -52,17 +58,44 @@ interface DashboardStats {
 export default function AdminDashboardPage() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [period, setPeriod] = useState<StatsPeriod>("week");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    setError(null);
     api
-      .get<DashboardStats>("/admin/stats")
-      .then(({ data }) => setStats(data))
-      .catch((err) => setError(err.message ?? "Failed to load dashboard"));
-  }, []);
+      .get<DashboardStats>("/admin/stats", { period })
+      .then(({ data }) => {
+        if (!cancelled) setStats(data);
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setError(err.message ?? "Failed to load dashboard");
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [period]);
+
+  const labels = periodRange(period);
+  const bookingsValue =
+    stats?.totals.bookingsInPeriod ?? stats?.totals.bookingsThisWeek ?? "—";
 
   return (
     <div>
-      <Topbar title="Travel Command Center" subtitle="Real-time insights. Smarter journeys." showRangePicker />
+      <Topbar
+        title="Travel Command Center"
+        subtitle="Real-time insights. Smarter journeys."
+        showRangePicker
+        range={period}
+        onRangeChange={setPeriod}
+      />
 
       <div className="space-y-6 p-8">
         {error ? (
@@ -73,9 +106,14 @@ export default function AdminDashboardPage() {
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <StatCard label="Total travelers" value={stats?.totals.users ?? "—"} icon={Users} tone="teal" />
-          <StatCard label="Bookings this week" value={stats?.totals.bookingsThisWeek ?? "—"} icon={CalendarClock} tone="navy" />
           <StatCard
-            label="Revenue collected"
+            label={labels.bookingsLabel}
+            value={loading && !stats ? "—" : bookingsValue}
+            icon={CalendarClock}
+            tone="navy"
+          />
+          <StatCard
+            label="Revenue in period"
             value={stats ? `$${stats.totals.revenue.toLocaleString()}` : "—"}
             icon={Wallet}
             tone="amber"
@@ -106,7 +144,7 @@ export default function AdminDashboardPage() {
 
             <div className="admin-panel p-6">
               <h3 className="text-base font-semibold text-ink">Booking journey timeline</h3>
-              <p className="mb-4 text-sm text-ink-muted">New bookings created over the last 7 days</p>
+              <p className="mb-4 text-sm text-ink-muted">{labels.timelineLabel}</p>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={stats?.bookingsTimeline ?? []}>
@@ -116,7 +154,7 @@ export default function AdminDashboardPage() {
                         <stop offset="95%" stopColor="#127E83" stopOpacity={0} />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="4 4" stroke="#d1e8ea" vertical={false} />
+                    <CartesianGrid strokeDasharray="4 4" stroke="var(--color-border)" vertical={false} />
                     <XAxis dataKey="_id" tick={{ fontSize: 12, fill: "#94A3B8" }} axisLine={false} tickLine={false} />
                     <YAxis allowDecimals={false} tick={{ fontSize: 12, fill: "#94A3B8" }} axisLine={false} tickLine={false} />
                     <Tooltip />
